@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import './App.css'
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
 
 function App() {
 const [employees, setEmployees] = useState([]);
@@ -16,7 +17,7 @@ useEffect(() => {
   const fetchTrainings = async () => {
     try {
       const response = await fetch(
-        'http://localhost:5001/api/trainings',
+        API_URL + '/api/trainings',
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -53,7 +54,7 @@ const [editingId, setEditingId] = useState(null)
 
 const loadEmployees = async (authToken) => {
 try {
-const response = await fetch('http://localhost:5001/api/employees', {
+const response = await fetch(API_URL + '/api/employees', {
   headers: {
     Authorization: `Bearer ${authToken}`,
   },
@@ -71,7 +72,7 @@ setLoading(false)
 
 const loadAttendance = async (authToken) => {
   try {
-    const response = await fetch('http://localhost:5001/api/attendance', {
+    const response = await fetch(API_URL + '/api/attendance', {
       headers: {
         Authorization: `Bearer ${authToken}`
       }
@@ -91,7 +92,7 @@ const loadAttendance = async (authToken) => {
 
 const loadLeaves = async (authToken) => {
   try {
-    const response = await fetch('http://localhost:5001/api/leaves', {
+    const response = await fetch(API_URL + '/api/leaves', {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
@@ -112,7 +113,7 @@ const loadLeaves = async (authToken) => {
 const loadAnnouncements = async (authToken) => {
   try {
     const response = await fetch(
-      'http://localhost:5001/api/announcements',
+      API_URL + '/api/announcements',
       {
         headers: {
           Authorization: `Bearer ${authToken}`,
@@ -151,7 +152,7 @@ const handleLogin = async (event) => {
   setLoginError('')
 
   try {
-    const response = await fetch('http://localhost:5001/api/auth/login', {
+    const response = await fetch(API_URL + '/api/auth/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -200,8 +201,8 @@ setError('')
 
 try {
   const url = editingId
-  ? `http://localhost:5001/api/employees/${editingId}`
-  : 'http://localhost:5001/api/employees'
+  ? `${API_URL}/api/employees/${editingId}`
+  : API_URL + '/api/employees'
 
 const response = await fetch(url, {
     method: editingId ? 'PUT' : 'POST',
@@ -237,7 +238,7 @@ const handleDelete = async (id, name) => {
 
     try {
       const response = await fetch(
-  `http://localhost:5001/api/employees/${id}`,
+  `${API_URL}/api/employees/${id}`,
   {
     method: 'DELETE',
     headers: {
@@ -484,7 +485,7 @@ return (
       const status = formData.get('status');
 
       try {
-        const response = await fetch('http://localhost:5001/api/attendance/mark', {
+        const response = await fetch(API_URL + '/api/attendance/mark', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -565,7 +566,7 @@ return (
 
       try {
         const response = await fetch(
-          'http://localhost:5001/api/leaves',
+          API_URL + '/api/leaves',
           {
             method: 'POST',
             headers: {
@@ -659,7 +660,7 @@ return (
               <button
                 onClick={async () => {
                   const response = await fetch(
-                    `http://localhost:5001/api/leaves/${leave._id}`,
+                    `${API_URL}/api/leaves/${leave._id}`,
                     {
                       method: 'PATCH',
                       headers: {
@@ -684,7 +685,7 @@ return (
               <button
                 onClick={async () => {
                   const response = await fetch(
-                    `http://localhost:5001/api/leaves/${leave._id}`,
+                    `${API_URL}/api/leaves/${leave._id}`,
                     {
                       method: 'PATCH',
                       headers: {
@@ -724,7 +725,7 @@ return (
 
         try {
           const response = await fetch(
-            'http://localhost:5001/api/announcements',
+            API_URL + '/api/announcements',
             {
               method: 'POST',
               headers: {
@@ -860,7 +861,7 @@ return (
 
         try {
           const response = await fetch(
-            'http://localhost:5001/api/trainings',
+            API_URL + '/api/trainings',
             {
               method: 'POST',
               headers: {
