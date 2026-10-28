@@ -40,6 +40,10 @@ useEffect(() => {
   }
 }, [token]);
 const [loginForm, setLoginForm] = useState({ email: '', password: '' })
+const [showSignup, setShowSignup] = useState(false)
+const [signupForm, setSignupForm] = useState({ name: '', email: '', password: '' })
+const [signupMessage, setSignupMessage] = useState('')
+const [signupError, setSignupError] = useState('')
 const [loginError, setLoginError] = useState('')
 const [loading, setLoading] = useState(true)
 const [error, setError] = useState('')
@@ -145,6 +149,42 @@ const handleLoginChange = (event) => {
     ...loginForm,
     [event.target.name]: event.target.value,
   })
+}
+
+const handleSignupChange = (event) => {
+  setSignupForm({
+    ...signupForm,
+    [event.target.name]: event.target.value,
+  })
+}
+
+const handleSignup = async (event) => {
+  event.preventDefault()
+  setSignupError('')
+  setSignupMessage('')
+
+  try {
+    const response = await fetch(API_URL + '/api/auth/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(signupForm),
+    })
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Signup failed')
+    }
+
+    setSignupForm({ name: '', email: '', password: '' })
+    setShowSignup(false)
+    setLoginError('')
+    setSignupMessage('Account created! Please log in.')
+  } catch (err) {
+    setSignupError(err.message || 'Signup failed')
+  }
 }
 
 const handleLogin = async (event) => {
@@ -273,39 +313,111 @@ const isManagerUp = isAdminOrHR || role === 'Manager'
 return (
 <div className="app">
   {!token && (
-  <section className="employee-section"
-  id="employee-directory">
-    <h2>StaffSync Login</h2>
+  <section className="employee-section" id="employee-directory">
+    {showSignup ? (
+      <>
+        <h2>StaffSync Sign Up</h2>
 
-    <form onSubmit={handleLogin} className="employee-form">
-      <input
-        type="email"
-        name="email"
-        placeholder="Enter your email"
-        value={loginForm.email}
-        onChange={handleLoginChange}
-        required
-      />
+        <form onSubmit={handleSignup} className="employee-form">
+          <input
+            type="text"
+            name="name"
+            placeholder="Enter your full name"
+            value={signupForm.name}
+            onChange={handleSignupChange}
+            required
+          />
 
-      <input
-        type="password"
-        name="password"
-        placeholder="Enter your password"
-        value={loginForm.password}
-        onChange={handleLoginChange}
-        required
-      />
+          <input
+            type="email"
+            name="email"
+            placeholder="Enter your email"
+            value={signupForm.email}
+            onChange={handleSignupChange}
+            required
+          />
 
-      <button type="submit" className="primary-button">
-        Login
-      </button>
-    </form>
+          <input
+            type="password"
+            name="password"
+            placeholder="Create a password (min 8 characters)"
+            value={signupForm.password}
+            onChange={handleSignupChange}
+            minLength={8}
+            required
+          />
 
-    {loginError && (
-      <p className="error-message">{loginError}</p>
+          <button type="submit" className="primary-button">
+            Sign Up
+          </button>
+        </form>
+
+        {signupError && <p className="error-message">{signupError}</p>}
+
+        <p>
+          Already have an account?{' '}
+          <button
+            type="button"
+            className="primary-button"
+            onClick={() => {
+              setShowSignup(false)
+              setSignupError('')
+            }}
+          >
+            Back to Login
+          </button>
+        </p>
+      </>
+    ) : (
+      <>
+        <h2>StaffSync Login</h2>
+
+        <form onSubmit={handleLogin} className="employee-form">
+          <input
+            type="email"
+            name="email"
+            placeholder="Enter your email"
+            value={loginForm.email}
+            onChange={handleLoginChange}
+            required
+          />
+
+          <input
+            type="password"
+            name="password"
+            placeholder="Enter your password"
+            value={loginForm.password}
+            onChange={handleLoginChange}
+            required
+          />
+
+          <button type="submit" className="primary-button">
+            Login
+          </button>
+        </form>
+
+        {signupMessage && <p className="success-message">{signupMessage}</p>}
+        {loginError && <p className="error-message">{loginError}</p>}
+
+        <p>
+          New user?{' '}
+          <button
+            type="button"
+            className="primary-button"
+            onClick={() => {
+              setShowSignup(true)
+              setLoginError('')
+              setSignupMessage('')
+            }}
+          >
+            Sign Up
+          </button>
+        </p>
+      </>
     )}
   </section>
 )}
+
 {token && (
   <>
 <nav className="navbar">
@@ -359,7 +471,15 @@ return (
       and keep your team connected.
     </p>
 
-    <div className="cards">
+    <div
+  className="cards"
+  style={{
+    display: 'flex',
+    justifyContent: 'center',
+    flexWrap: 'wrap',
+    gap: '20px',
+  }}
+>
       <div
   className="card"
   role="button"
